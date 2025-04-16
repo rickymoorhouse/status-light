@@ -26,4 +26,6 @@ class HelloWorld(object):
         set_light(int(r), int(g), int(b))
         return "Hello World! " + str(r) + ","+str(g)+","+str(b)+""
 
+cherrypy.server.socket_host = '0.0.0.0'
+cherrypy.server.socket_port = 8080
 cherrypy.quickstart(HelloWorld())
