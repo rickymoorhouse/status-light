@@ -1,0 +1,9 @@
+version: '2'
+volumes:
+  output: {}
+services:
+  light:
+    build: ./light
+    privileged: true
+    devices:
+      - "/dev/i2c-1:/dev/i2c-1"
