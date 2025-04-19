@@ -42,20 +42,16 @@ class LEDController(object):
     @cherrypy.expose
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
-    def leds(self):
+    def leds(self. r=None, g=None, b=None):
         """Manage LED colors."""
         if cherrypy.request.method == "GET":
             # Get the current color
             return {"status": "success", "color": current_color}
         elif cherrypy.request.method == "POST":
-            # Set the color using a JSON payload
-            input_json = cherrypy.request.json
-            if not all(k in input_json for k in ("r", "g", "b")):
-                raise cherrypy.HTTPError(400, "Missing RGB values in JSON payload")
             try:
-                r = int(input_json["r"])
-                g = int(input_json["g"])
-                b = int(input_json["b"])
+                r = int(r)
+                g = int(g)
+                b = int(b)
                 set_light(r, g, b)
                 return {"status": "success", "color": current_color}
             except ValueError:
@@ -75,12 +71,8 @@ class LEDController(object):
             # Get the current brightness
             return {"status": "success", "brightness": current_brightness}
         elif cherrypy.request.method == "POST":
-            # Set the brightness using a JSON payload
-            input_json = cherrypy.request.json
-            if "brightness" not in input_json:
-                raise cherrypy.HTTPError(400, "Missing brightness value in JSON payload")
             try:
-                brightness = float(input_json["brightness"])
+                brightness = float(brightness)
                 if 0.0 <= brightness <= 1.0:
                     current_brightness = brightness
                     blinkt.set_brightness(current_brightness)
