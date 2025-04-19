@@ -10,6 +10,7 @@ except ImportError:
 
 # Global variable to store the current color
 current_color = {"r": 0, "g": 0, "b": 0}
+current_brightness = 0.1
 
 
 def set_light(r, g, b):
@@ -78,6 +79,29 @@ class LEDController(object):
     def get_color(self):
         """Get the current LED color."""
         return {"status": "success", "color": current_color}
+    
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def set_brightness(self, brightness):
+        """Set the brightness level."""
+        global current_brightness
+        try:
+            brightness = float(brightness)
+            if 0.0 <= brightness <= 1.0:
+                current_brightness = brightness
+                blinkt.set_brightness(current_brightness)
+                return {"status": "success", "brightness": current_brightness}
+            else:
+                return {"status": "error", "message": "Brightness must be between 0.0 and 1.0"}
+        except ValueError:
+            return {"status": "error", "message": "Invalid brightness value"}
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def get_brightness(self):
+        """Get the current brightness level."""
+        return {"status": "success", "brightness": current_brightness}
+
 
 
 # Configure and start the CherryPy server
