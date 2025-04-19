@@ -41,17 +41,24 @@ def clear_light():
 class LEDController(object):
     @cherrypy.expose
     @cherrypy.tools.json_out()
-    def leds(self, r=None, g=None, b=None):
+    def leds(self):
         """Manage LED colors."""
         if cherrypy.request.method == "GET":
             # Get the current color
             return {"status": "success", "color": current_color}
         elif cherrypy.request.method == "POST":
-            # Set the color
-            if r is None or g is None or b is None:
-                raise cherrypy.HTTPError(400, "Missing RGB values")
-            set_light(int(r), int(g), int(b))
-            return {"status": "success", "color": current_color}
+            # Set the color using a JSON payload
+            input_json = cherrypy.request.json
+            if not all(k in input_json for k in ("r", "g", "b")):
+                raise cherrypy.HTTPError(400, "Missing RGB values in JSON payload")
+            try:
+                r = int(input_json["r"])
+                g = int(input_json["g"])
+                b = int(input_json["b"])
+                set_light(r, g, b)
+                return {"status": "success", "color": current_color}
+            except ValueError:
+                raise cherrypy.HTTPError(400, "Invalid RGB values")
         elif cherrypy.request.method == "DELETE":
             # Clear the LEDs
             clear_light()
