@@ -41,8 +41,7 @@ def clear_light():
 class LEDController(object):
     @cherrypy.expose
     @cherrypy.tools.json_out()
-    @cherrypy.tools.json_in()
-    def leds(self, r=None, g=None, b=None):
+    def leds(self, r=0, g=0, b=0):
         """Manage LED colors."""
         if cherrypy.request.method == "GET":
             # Get the current color
@@ -63,8 +62,7 @@ class LEDController(object):
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
-    @cherrypy.tools.json_in()
-    def brightness(self, brightness=None):
+    def brightness(self, brightness=0.1):
         """Manage LED brightness."""
         global current_brightness
         if cherrypy.request.method == "GET":
