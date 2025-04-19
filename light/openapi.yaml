@@ -1,0 +1,159 @@
+openapi: 3.0.0
+info:
+  title: LED Controller API
+  description: API to control LED colors and brightness using a Blinkt! device.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+paths:
+  /leds:
+    get:
+      summary: Get the current LED color
+      responses:
+        '200':
+          description: Current LED color
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  color:
+                    type: object
+                    properties:
+                      r:
+                        type: integer
+                        example: 255
+                      g:
+                        type: integer
+                        example: 100
+                      b:
+                        type: integer
+                        example: 50
+    post:
+      summary: Set the LED color
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                r:
+                  type: integer
+                  description: Red value (0-255)
+                  example: 255
+                g:
+                  type: integer
+                  description: Green value (0-255)
+                  example: 100
+                b:
+                  type: integer
+                  description: Blue value (0-255)
+                  example: 50
+      responses:
+        '200':
+          description: LED color set successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  color:
+                    type: object
+                    properties:
+                      r:
+                        type: integer
+                        example: 255
+                      g:
+                        type: integer
+                        example: 100
+                      b:
+                        type: integer
+                        example: 50
+    delete:
+      summary: Clear the LEDs
+      responses:
+        '200':
+          description: LEDs cleared successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: LEDs cleared
+  /brightness:
+    get:
+      summary: Get the current brightness level
+      responses:
+        '200':
+          description: Current brightness level
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  brightness:
+                    type: number
+                    format: float
+                    example: 0.5
+    post:
+      summary: Set the brightness level
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                brightness:
+                  type: number
+                  format: float
+                  description: Brightness level (0.0-1.0)
+                  example: 0.5
+      responses:
+        '200':
+          description: Brightness set successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  brightness:
+                    type: number
+                    format: float
+                    example: 0.5
+  /orange:
+    post:
+      summary: Set the LEDs to orange for 5 minutes
+      responses:
+        '200':
+          description: LEDs set to orange
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  message:
+                    type: string
+                    example: LEDs set to orange for 5 minutes
