@@ -42,7 +42,7 @@ class LEDController(object):
     @cherrypy.expose
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
-    def leds(self. r=None, g=None, b=None):
+    def leds(self, r=None, g=None, b=None):
         """Manage LED colors."""
         if cherrypy.request.method == "GET":
             # Get the current color
