@@ -73,11 +73,12 @@ class LEDController(object):
             # Get the current brightness
             return {"status": "success", "brightness": current_brightness}
         elif cherrypy.request.method == "POST":
-            # Set the brightness
-            if brightness is None:
-                raise cherrypy.HTTPError(400, "Missing brightness value")
+            # Set the brightness using a JSON payload
+            input_json = cherrypy.request.json
+            if "brightness" not in input_json:
+                raise cherrypy.HTTPError(400, "Missing brightness value in JSON payload")
             try:
-                brightness = float(brightness)
+                brightness = float(input_json["brightness"])
                 if 0.0 <= brightness <= 1.0:
                     current_brightness = brightness
                     blinkt.set_brightness(current_brightness)
@@ -87,7 +88,7 @@ class LEDController(object):
                     raise cherrypy.HTTPError(400, "Brightness must be between 0.0 and 1.0")
             except ValueError:
                 raise cherrypy.HTTPError(400, "Invalid brightness value")
-    
+                
     @cherrypy.expose
     @cherrypy.tools.json_out()
     def index(self):

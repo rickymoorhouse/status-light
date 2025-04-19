@@ -1,0 +1,51 @@
+@host = 192.168.0.155
+
+@red = 255
+@green = 100
+@blue = 50
+@brightness = 0.5
+
+
+### Get the current LED color
+GET http://{{host}}/leds
+Content-Type: application/json
+
+
+
+### Set the LED color using RGB values
+POST http://{{host}}/leds
+Content-Type: application/json
+
+{
+  "r": {{red}},
+  "g": {{green}},
+  "b": {{blue}}
+}
+
+###
+
+### Clear the LEDs
+DELETE http://{{host}}/leds
+Content-Type: application/json
+
+###
+
+### Get the current brightness
+GET http://{{host}}/brightness
+Content-Type: application/json
+
+###
+
+### Set the brightness level
+POST http://{{host}}/brightness
+Content-Type: application/json
+
+{
+  "brightness": 0.5
+}
+
+###
+
+### Set the LEDs to orange for 5 minutes
+POST http://{{host}}/orange
+Content-Type: application/json
