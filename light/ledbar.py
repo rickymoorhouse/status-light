@@ -20,8 +20,7 @@ def set_light(r, g, b):
     current_color = {"r": r, "g": g, "b": b}
     print(f'Setting LEDs to {r},{g},{b}')
     try:
-        for x in range(blinkt.NUM_PIXELS):
-            blinkt.set_pixel(x, r, g, b)
+        blinkt.set_all(r, g, b, current_brightness)
         blinkt.show()
     except ImportError:
         print("blinkt not found - local dev")
@@ -40,6 +39,48 @@ def clear_light():
 
 
 class LEDController(object):
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def leds(self, r=None, g=None, b=None):
+        """Manage LED colors."""
+        if cherrypy.request.method == "GET":
+            # Get the current color
+            return {"status": "success", "color": current_color}
+        elif cherrypy.request.method == "POST":
+            # Set the color
+            if r is None or g is None or b is None:
+                raise cherrypy.HTTPError(400, "Missing RGB values")
+            set_light(int(r), int(g), int(b))
+            return {"status": "success", "color": current_color}
+        elif cherrypy.request.method == "DELETE":
+            # Clear the LEDs
+            clear_light()
+            return {"status": "success", "message": "LEDs cleared"}
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def brightness(self, brightness=None):
+        """Manage LED brightness."""
+        global current_brightness
+        if cherrypy.request.method == "GET":
+            # Get the current brightness
+            return {"status": "success", "brightness": current_brightness}
+        elif cherrypy.request.method == "POST":
+            # Set the brightness
+            if brightness is None:
+                raise cherrypy.HTTPError(400, "Missing brightness value")
+            try:
+                brightness = float(brightness)
+                if 0.0 <= brightness <= 1.0:
+                    current_brightness = brightness
+                    blinkt.set_brightness(current_brightness)
+                    blinkt.show()
+                    return {"status": "success", "brightness": current_brightness}
+                else:
+                    raise cherrypy.HTTPError(400, "Brightness must be between 0.0 and 1.0")
+            except ValueError:
+                raise cherrypy.HTTPError(400, "Invalid brightness value")
+    
     @cherrypy.expose
     @cherrypy.tools.json_out()
     def index(self):
@@ -107,18 +148,19 @@ class LEDController(object):
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
-    def set_orange_for_5_minutes(self):
-        """Set the light to orange for 5 minutes."""
-        def reset_after_delay():
-            time.sleep(300)  # Wait for 5 minutes (300 seconds)
-            clear_light()
-            print("LEDs reset after 5 minutes")
+    def orange(self):
+        """Set the LEDs to orange for 5 minutes."""
+        if cherrypy.request.method == "POST":
+            def reset_after_delay():
+                time.sleep(300)  # Wait for 5 minutes
+                clear_light()
+                print("LEDs reset after 5 minutes")
 
-        # Set the light to orange
-        set_light(255, 165, 0)  # RGB for orange
-        # Start a background thread to reset the light after 5 minutes
-        threading.Thread(target=reset_after_delay, daemon=True).start()
-        return {"status": "success", "message": "LEDs set to orange for 5 minutes"}
+            # Set the light to orange
+            set_light(255, 65, 0)  # RGB for orange
+            threading.Thread(target=reset_after_delay, daemon=True).start()
+            return {"status": "success", "message": "LEDs set to orange for 5 minutes"}
+
 
 
 
