@@ -1,10 +1,12 @@
 
 import cherrypy
 try:
-    import ledshim
-    ledshim.set_clear_on_exit()
+    import blinkt
+    blinkt.set_clear_on_exit()
+    blinkt.set_brightness(0.1)
+
 except ImportError: 
-    print("ledshim not found - local dev")
+    print("blinkt not found - local dev")
 
 # Global variable to store the current color
 current_color = {"r": 0, "g": 0, "b": 0}
@@ -16,11 +18,11 @@ def set_light(r, g, b):
     current_color = {"r": r, "g": g, "b": b}
     print(f'Setting LEDs to {r},{g},{b}')
     try:
-        ledshim.set_clear_on_exit(False)
-        ledshim.set_all(r, g, b)
-        ledshim.show()
-    except:
-        print("ledshim not found - local dev")
+        for x in range(blinkt.NUM_PIXELS):
+            blinkt.set_pixel(x, r, g, b)
+        blinkt.show()
+    except ImportError:
+        print("blinkt not found - local dev")
 
 def clear_light():
     """Clear the LEDs."""
@@ -28,10 +30,10 @@ def clear_light():
     current_color = {"r": 0, "g": 0, "b": 0}
     print("Clearing LEDs")
     try:
-        ledshim.clear()
-        ledshim.show()
+        blinkt.clear()
+        blinkt.show()
     except:
-        print("ledshim not found - local dev")
+        print("blinkt not found - local dev")
 
 
 
