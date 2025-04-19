@@ -1,4 +1,5 @@
-
+import threading
+import time
 import cherrypy
 try:
     import blinkt
@@ -90,6 +91,7 @@ class LEDController(object):
             if 0.0 <= brightness <= 1.0:
                 current_brightness = brightness
                 blinkt.set_brightness(current_brightness)
+                blinkt.show()
                 return {"status": "success", "brightness": current_brightness}
             else:
                 return {"status": "error", "message": "Brightness must be between 0.0 and 1.0"}
@@ -101,6 +103,23 @@ class LEDController(object):
     def get_brightness(self):
         """Get the current brightness level."""
         return {"status": "success", "brightness": current_brightness}
+    
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def set_orange_for_5_minutes(self):
+        """Set the light to orange for 5 minutes."""
+        def reset_after_delay():
+            time.sleep(300)  # Wait for 5 minutes (300 seconds)
+            clear_light()
+            print("LEDs reset after 5 minutes")
+
+        # Set the light to orange
+        set_light(255, 165, 0)  # RGB for orange
+        # Start a background thread to reset the light after 5 minutes
+        threading.Thread(target=reset_after_delay, daemon=True).start()
+        return {"status": "success", "message": "LEDs set to orange for 5 minutes"}
+
 
 
 
